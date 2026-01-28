@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://test.com/multiple"
+           xmlns:tns="http://test.com/multiple">
+
+    <xs:element name="person" type="tns:PersonType"/>
+    <xs:element name="company" type="tns:CompanyType"/>
+    <xs:element name="product" type="xs:string"/>
+
+    <xs:complexType name="PersonType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CompanyType">
+        <xs:sequence>
+            <xs:element name="companyName" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
