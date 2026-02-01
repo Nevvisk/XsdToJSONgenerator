@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://example.com/host"
+           targetNamespace="http://example.com/host"
+           elementFormDefault="qualified">
+
+  <xs:element name="HostMessage" type="tns:HostMessageTypeTest"/>
+
+  <xs:complexType name="HostMessageTypeTest">
+    <xs:sequence>
+      <xs:element name="id" type="xs:string"/>
+      <xs:element name="count" type="xs:int" minOccurs="0" maxOccurs="3"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

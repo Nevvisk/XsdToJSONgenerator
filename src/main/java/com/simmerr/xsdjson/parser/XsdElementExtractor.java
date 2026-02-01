@@ -13,6 +13,7 @@ import static org.apache.xerces.xs.XSConstants.ELEMENT_DECLARATION;
 
 public class XsdElementExtractor {
 
+    protected XsdParsingHelper helper = new XsdParsingHelper();
     private static final Logger logger = LoggerFactory.getLogger(XsdElementExtractor.class);
 
     public List<ElementInfo> extractRootElements(XSModel model) {
@@ -25,7 +26,7 @@ public class XsdElementExtractor {
             return elements;
         }
         for (Object obj : elementMap.values()) {
-            ElementInfo elementInfo = getElementInfo((XSElementDeclaration) obj);
+            ElementInfo elementInfo = helper.getElementInfo((XSElementDeclaration) obj);
             logger.info("Extracted element: {}", elementInfo.getQualifiedName());
             elements.add(elementInfo);
         }
@@ -39,7 +40,7 @@ public class XsdElementExtractor {
         for (Object obj : elementMap.values()) {
             XSElementDeclaration declaration = (XSElementDeclaration) obj;
             if (declaration.getName().equals(elementName)) {
-                return getElementInfo(declaration);
+                return helper.getElementInfo(declaration);
             }
         }
 
@@ -47,7 +48,7 @@ public class XsdElementExtractor {
         if (isElementDeclarationNull(elementDeclaration, elementName)) {
             return null;
         }
-        return getElementInfo(elementDeclaration);
+        return helper.getElementInfo(elementDeclaration);
     }
 
     public ElementInfo findRootElement(XSModel model, String elementName, String namespace) {
@@ -57,26 +58,7 @@ public class XsdElementExtractor {
         if (isElementDeclarationNull(elementDeclaration, elementName)) {
             return null;
         }
-        return getElementInfo(elementDeclaration);
-    }
-
-
-    private ElementInfo getElementInfo(XSElementDeclaration obj) {
-        String name = obj.getName();
-        String namespace = obj.getNamespace();
-        XSTypeDefinition typeDefinition = obj.getTypeDefinition();
-
-        String typeName = typeDefinition.getName();
-        String typeNamespace = typeDefinition.getNamespace();
-        boolean isComplexType = (typeDefinition.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE);
-
-        if (null == typeName || typeName.isEmpty()) {
-            typeName = name + "_AnonymousType";
-            logger.debug("Element {} has anonymous type", name);
-        }
-        return new ElementInfo(
-                name, namespace, typeName, isComplexType, typeNamespace, 1, 1
-        );
+        return helper.getElementInfo(elementDeclaration);
     }
 
     private void validateModel(XSModel model) {
