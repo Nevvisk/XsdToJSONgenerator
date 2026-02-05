@@ -12,7 +12,7 @@
 ---
 ## Project Status Summary
 
-**Last Updated:** 2026-01-24
+**Last Updated:** 2026-02-05
 **Current Phase:** WP1 Complete ✅ | WP2 In Progress 🚧
 
 ### What Has Been Completed:
@@ -38,7 +38,7 @@
   - Root logger set to INFO level
 - Maven Surefire Plugin 3.2.3 configured for test execution
 - Maven build verified and working
-- README.md deferred until project is more fleshed out
+- README.md created (currently minimal)
 
 **WP2: XSD Parser Implementation** 🚧
 - XsdLoader class implemented in `parser/` package
@@ -48,12 +48,35 @@
   - Comprehensive error handling with XsdLoadException
   - SLF4J logging for debugging
 - XsdLoadException custom exception created for schema loading errors
+- XsdElementExtractor implemented for root element parsing
+  - Extracts all root elements from XSModel
+  - Supports lookup by name and optional namespace
+  - Handles anonymous types and simple vs complex types
 - Unit tests created (XsdLoaderTest):
   - Test loading valid XSD schema
   - Test handling non-existent files
   - Test handling invalid XML/XSD content
   - Test XSD file created: `src/test/resources/simple-person.xsd`
+- Unit tests created (XsdElementExtractorTest):
+  - Test single/multiple/empty root element extraction
+  - Test anonymous and simple types
+  - Test find-by-name and namespace lookup
+  - Test imports (`person-with-import.xsd`)
 - All tests passing ✅
+- XsdComplexTypeParser updated for sequence-only parsing
+  - Returns populated ComplexTypeDefinition
+  - Parses sequence groups and element min/max occurs
+  - Fails fast for CHOICE/ALL
+- Internal model classes added for parsed schema representation
+  - TypeDefinition, ComplexTypeDefinition, SingleTypeDefinition
+  - TypeRegistry, ParsedSchema, ElementInfo, ParsedGroup, ContentModel, FacetType
+- Schema parsing entry point added
+  - `ParsedSchema` model introduced
+  - `XsdSchemaParser` orchestrates load → extract roots → parse complex types
+  - `SchemaParsingFacade` wraps parser for external use
+- Unit tests added for complex type sequence parsing
+  - `host-message-sequence.xsd`
+  - `multiple-elements.xsd`
 
 ### Decisions Made:
 
@@ -61,9 +84,15 @@
 
 2. **Logging Configuration:** Chose Option 2 (Console + File logging) for flexibility in both development and production environments.
 
-3. **Java Version:** Targeting Java 11+
+3. **Java Version:** Targeting Java 17 (per pom.xml)
 
-4. **README:** Postponed until features are implemented to provide more meaningful documentation
+4. **README:** Created early; will be expanded later
+
+### Scope Clarification (HostMessage XSD)
+
+- The program will accept **one XSD file** that defines all host message root elements.
+- Types referenced by those host messages may be defined in other XSD files via import/include and must be resolved.
+- It should parse the host message XSD, resolve imported/included types as needed, and generate JSON bodies for those host message roots.
 
 ### Project Structure Created:
 ```
@@ -86,13 +115,16 @@ xsd-json-generator/
 └── logs/ (will be created on first run)
 ```
 
+### Current Task (single source of truth)
+
+- [x] Parse complex types (choices)
+
 ### Next Steps:
 
-**WP2: XSD Parser Implementation** is next. This involves:
-- Implementing XSD file loader using Xerces
-- Parsing schema definitions and constraints
-- Creating internal model to represent parsed XSD
-- Handling namespaces and imports
+**WP2: XSD Parser Implementation** continues. Immediate focus:
+- Implement parsing for CHOICE compositor in complex types
+- Add unit tests covering CHOICE behavior
+- Decide how to represent choice groups in the internal model (extend ParsedGroup or add a new model)
 
 ---
 
@@ -116,19 +148,19 @@ xsd-json-generator/
 ## WP2: XSD Parser Implementation
 
 - [x] Implement XSD file loader using Xerces
-- [ ] Parse root elements from XSD
-- [ ] Parse complex types (sequences)
+- [x] Parse root elements from XSD
+- [x] Parse complex types (sequences)
 - [ ] Parse complex types (choices)
 - [ ] Parse complex types (all)
 - [ ] Parse simple types with restrictions
-- [ ] Extract element cardinality (minOccurs, maxOccurs)
+- [x] Extract element cardinality (minOccurs, maxOccurs)
 - [ ] Extract string constraints (minLength, maxLength)
 - [ ] Extract string pattern constraints
 - [ ] Extract numeric constraints (minInclusive, maxInclusive, etc.)
 - [ ] Extract enumeration values
 - [ ] Handle imported schemas
 - [ ] Handle included schemas
-- [ ] Create internal model classes for parsed schema
+- [x] Create internal model classes for parsed schema
 - [ ] Implement namespace resolution for imported types
 - [ ] Implement error handling for invalid XSD files
 - [ ] Write unit tests for XSD parsing
