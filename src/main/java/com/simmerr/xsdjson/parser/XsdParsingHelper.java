@@ -2,14 +2,11 @@ package com.simmerr.xsdjson.parser;
 
 import com.simmerr.xsdjson.model.ElementInfo;
 import com.simmerr.xsdjson.model.FacetType;
-import org.apache.xerces.xs.*;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class XsdParsingHelper {
     private static final Logger logger = LoggerFactory.getLogger(XsdParsingHelper.class);
@@ -30,35 +27,6 @@ public class XsdParsingHelper {
         return new ElementInfo(
                 name, namespace, typeName, isComplexType, typeNamespace, 1, 1
         );
-    }
-
-    public Map<FacetType, List<String>> buildFacetMap(XSObjectList facets) {
-        Map<FacetType, List<String>> map = new HashMap<>();
-        for (int i = 0; i < facets.getLength(); i++) {
-            XSObject facet = (XSObject) facets.get(i);
-            if (facet instanceof XSFacet) {
-                XSFacet singleFacet = (XSFacet) facet;
-                FacetType facetType = mapFacetKind(singleFacet.getFacetKind());
-                if (facetType != null) {
-                    logger.debug("Mapped facet {} -> {}", singleFacet.getFacetKind(), facetType);
-                    map.computeIfAbsent(facetType, k -> new ArrayList<>()).add(singleFacet.getLexicalFacetValue());
-                }
-            } else {
-                XSMultiValueFacet multiFacet = (XSMultiValueFacet) facet;
-                FacetType facetType = mapFacetKind(multiFacet.getFacetKind());
-                if (facetType == null) {
-                    continue;
-                }
-
-                StringList values = multiFacet.getLexicalFacetValues();
-                logger.debug("Mapped multi-value facet {} -> {} ({} value(s))", multiFacet.getFacetKind(), facetType, values.getLength());
-                for (int j = 0; j < values.getLength(); j++) {
-                    map.computeIfAbsent(facetType, k -> new ArrayList<>())
-                            .add(values.item(j));
-                }
-            }
-        }
-        return map;
     }
 
     public FacetType mapFacetKind(short facetKind) {

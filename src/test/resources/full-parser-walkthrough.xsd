@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://example.com/full"
+           xmlns:tns="http://example.com/full"
+           elementFormDefault="qualified">
+
+    <!-- Root elements for each implemented path -->
+    <xs:element name="order" type="tns:OrderType"/>
+    <xs:element name="ping" type="tns:PingType"/>
+    <xs:element name="lineRoot" type="tns:LineType"/>
+    <xs:element name="codeRoot" type="tns:CodeType"/>
+    <xs:element name="statusRoot" type="tns:StatusType"/>
+    <xs:element name="quantityRoot" type="tns:QuantityType"/>
+
+    <!-- SIMPLE TYPES -->
+    <xs:simpleType name="CodeType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="3"/>
+            <xs:maxLength value="8"/>
+            <xs:pattern value="[A-Z0-9]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="StatusType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NEW"/>
+            <xs:enumeration value="PROCESSING"/>
+            <xs:enumeration value="DONE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="QuantityType">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="999"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- COMPLEX TYPES -->
+    <xs:complexType name="OrderType">
+        <xs:sequence>
+            <xs:element name="code" type="tns:CodeType"/>
+            <xs:element name="status" type="tns:StatusType" minOccurs="0"/>
+            <xs:element name="line" type="tns:LineType" maxOccurs="3"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="LineType">
+        <xs:choice>
+            <xs:element name="qty" type="tns:QuantityType"/>
+            <xs:element name="note" type="xs:string"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="PingType">
+        <xs:all>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="timestamp" type="xs:dateTime" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+</xs:schema>
