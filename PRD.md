@@ -12,7 +12,7 @@
 ---
 ## Project Status Summary
 
-**Last Updated:** 2026-02-05
+**Last Updated:** 2026-02-22
 **Current Phase:** WP1 Complete ✅ | WP2 In Progress 🚧
 
 ### What Has Been Completed:
@@ -63,10 +63,10 @@
   - Test find-by-name and namespace lookup
   - Test imports (`person-with-import.xsd`)
 - All tests passing ✅
-- XsdComplexTypeParser updated for sequence-only parsing
+- XsdComplexTypeParser updated for sequence and choice parsing
   - Returns populated ComplexTypeDefinition
-  - Parses sequence groups and element min/max occurs
-  - Fails fast for CHOICE/ALL
+  - Parses sequence/choice groups and element min/max occurs
+  - Fails fast for ALL
 - Internal model classes added for parsed schema representation
   - TypeDefinition, ComplexTypeDefinition, SingleTypeDefinition
   - TypeRegistry, ParsedSchema, ElementInfo, ParsedGroup, ContentModel, FacetType
@@ -77,6 +77,8 @@
 - Unit tests added for complex type sequence parsing
   - `host-message-sequence.xsd`
   - `multiple-elements.xsd`
+- Unit tests added for complex type choice parsing
+  - `host-message-choice.xsd`
 
 ### Decisions Made:
 
@@ -122,9 +124,9 @@ xsd-json-generator/
 ### Next Steps:
 
 **WP2: XSD Parser Implementation** continues. Immediate focus:
-- Implement parsing for CHOICE compositor in complex types
-- Add unit tests covering CHOICE behavior
-- Decide how to represent choice groups in the internal model (extend ParsedGroup or add a new model)
+- Implement parsing for ALL compositor in complex types
+- Add unit tests covering ALL behavior
+- Align parser behavior and model representation for mixed group compositors
 
 ---
 
@@ -150,7 +152,7 @@ xsd-json-generator/
 - [x] Implement XSD file loader using Xerces
 - [x] Parse root elements from XSD
 - [x] Parse complex types (sequences)
-- [ ] Parse complex types (choices)
+- [x] Parse complex types (choices)
 - [ ] Parse complex types (all)
 - [ ] Parse simple types with restrictions
 - [x] Extract element cardinality (minOccurs, maxOccurs)

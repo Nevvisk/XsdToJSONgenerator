@@ -81,8 +81,15 @@ public class XsdComplexTypeParser {
                 ParsedGroup childGroup = parseParticle(particle, typeRegistry);
                 parsedGroup.getElementList().addAll(childGroup.getElementList());
             }
+        } else if (group.getCompositor() == XSModelGroup.COMPOSITOR_CHOICE) {
+            parsedGroup.setContentModel(ContentModel.CHOICE);
+            List<XSParticle> particleList = getParticleListFromGroup(group);
+            for (XSParticle particle : particleList) {
+                ParsedGroup childGroup = parseParticle(particle, typeRegistry);
+                parsedGroup.getElementList().addAll(childGroup.getElementList());
+            }
         } else {
-            throw new XsdComplexTypeParsingException("CHOICE/ALL not supported yet.");
+            throw new XsdComplexTypeParsingException("ALL not supported yet.");
         }
         return parsedGroup;
     }

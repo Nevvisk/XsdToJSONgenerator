@@ -63,4 +63,31 @@ public class XsdComplexTypeParserTest {
         assertEquals(1, companyType.getChildElements().size());
         assertNotNull(TestHelper.findElementByName(companyType.getChildElements(), "companyName"));
     }
+
+    @Test
+    void parseChoiceComplexType() {
+        SchemaParsingFacade facade = new SchemaParsingFacade();
+        ParsedSchema parsedSchema = facade.parseHostMessageSchema(
+                TestHelper.getResourcePath("host-message-choice.xsd")
+        );
+
+        ComplexTypeDefinition typeDefinition = (ComplexTypeDefinition) parsedSchema
+                .getTypeRegistry()
+                .get("HostMessageChoiceType", "http://example.com/host");
+
+        assertEquals(ContentModel.CHOICE, typeDefinition.getContentModel());
+
+        List<ElementInfo> children = typeDefinition.getChildElements();
+        assertEquals(2, children.size());
+
+        ElementInfo idElement = TestHelper.findElementByName(children, "id");
+        assertNotNull(idElement);
+        assertEquals(1, idElement.getMinOccurs());
+        assertEquals(1, idElement.getMaxOccurs());
+
+        ElementInfo countElement = TestHelper.findElementByName(children, "count");
+        assertNotNull(countElement);
+        assertEquals(0, countElement.getMinOccurs());
+        assertEquals(3, countElement.getMaxOccurs());
+    }
 }
