@@ -119,14 +119,14 @@ xsd-json-generator/
 
 ### Current Task (single source of truth)
 
-- [x] Parse complex types (choices)
+- [x] Parse simple types with restrictions
 
 ### Next Steps:
 
 **WP2: XSD Parser Implementation** continues. Immediate focus:
-- Implement parsing for ALL compositor in complex types
-- Add unit tests covering ALL behavior
-- Align parser behavior and model representation for mixed group compositors
+- Extract string constraints (minLength, maxLength)
+- Extract string pattern constraints
+- Extract numeric constraints and enumeration values across more schemas
 
 ---
 
@@ -153,8 +153,8 @@ xsd-json-generator/
 - [x] Parse root elements from XSD
 - [x] Parse complex types (sequences)
 - [x] Parse complex types (choices)
-- [ ] Parse complex types (all)
-- [ ] Parse simple types with restrictions
+- [x] Parse complex types (all)
+- [x] Parse simple types with restrictions
 - [x] Extract element cardinality (minOccurs, maxOccurs)
 - [ ] Extract string constraints (minLength, maxLength)
 - [ ] Extract string pattern constraints

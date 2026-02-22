@@ -48,6 +48,10 @@ public class TypeRegistry {
         registry.remove(key);
     }
 
+    public void clear() {
+        registry.clear();
+    }
+
     private String createKey(String name, String namespace) {
         if (namespace == null || namespace.isEmpty()) {
             return name;

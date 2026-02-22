@@ -1,20 +1,23 @@
 package com.simmerr.xsdjson.model;
 
+import java.util.List;
 import java.util.Map;
 
-public class SingleTypeDefinition implements TypeDefinition {
+public class SimpleTypeDefinition implements TypeDefinition {
 
     protected String name;
     protected String namespace;
     protected String baseType;
-    protected Map<FacetType, String> facets;
+    protected Map<FacetType, List<String>> facets;
 
-    public SingleTypeDefinition(String name, String namespace, String baseType, Map<FacetType, String> facets) {
+    public SimpleTypeDefinition(String name, String namespace, String baseType, Map<FacetType, List<String>> facets) {
         this.name = name;
         this.namespace = namespace;
         this.baseType = baseType;
         this.facets = facets;
     }
+
+    public SimpleTypeDefinition() {};
 
     public String getBaseType() {
         return baseType;
@@ -24,12 +27,20 @@ public class SingleTypeDefinition implements TypeDefinition {
         this.baseType = baseType;
     }
 
-    public Map<FacetType, String> getFacets() {
+    public Map<FacetType, List<String>> getFacets() {
         return facets;
     }
 
-    public void setFacets(Map<FacetType, String> facets) {
+    public void setFacets(Map<FacetType, List<String>> facets) {
         this.facets = facets;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setNamespace(String nameSpace) {
+        this.namespace = nameSpace;
     }
 
     @Override

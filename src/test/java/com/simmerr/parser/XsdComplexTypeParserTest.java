@@ -90,4 +90,31 @@ public class XsdComplexTypeParserTest {
         assertEquals(0, countElement.getMinOccurs());
         assertEquals(3, countElement.getMaxOccurs());
     }
+
+    @Test
+    void parseAllComplexType() {
+        SchemaParsingFacade facade = new SchemaParsingFacade();
+        ParsedSchema parsedSchema = facade.parseHostMessageSchema(
+                TestHelper.getResourcePath("host-message-all.xsd")
+        );
+
+        ComplexTypeDefinition typeDefinition = (ComplexTypeDefinition) parsedSchema
+                .getTypeRegistry()
+                .get("HostMessageAllType", "http://example.com/host");
+
+        assertEquals(ContentModel.ALL, typeDefinition.getContentModel());
+
+        List<ElementInfo> children = typeDefinition.getChildElements();
+        assertEquals(2, children.size());
+
+        ElementInfo idElement = TestHelper.findElementByName(children, "id");
+        assertNotNull(idElement);
+        assertEquals(1, idElement.getMinOccurs());
+        assertEquals(1, idElement.getMaxOccurs());
+
+        ElementInfo countElement = TestHelper.findElementByName(children, "count");
+        assertNotNull(countElement);
+        assertEquals(0, countElement.getMinOccurs());
+        assertEquals(1, countElement.getMaxOccurs());
+    }
 }
