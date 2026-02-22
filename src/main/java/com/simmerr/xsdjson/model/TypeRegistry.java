@@ -1,9 +1,13 @@
 package com.simmerr.xsdjson.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class TypeRegistry {
+    private static final Logger logger = LoggerFactory.getLogger(TypeRegistry.class);
 
     private static TypeRegistry instance;
 
@@ -23,9 +27,11 @@ public class TypeRegistry {
     public void register(TypeDefinition typeDefinition) {
         String key = createKey(typeDefinition.getName(), typeDefinition.getNamespace());
         if (registry.containsKey(key)) {
+            logger.error("Type {} already exists in registry", key);
             throw new IllegalArgumentException("Key " + typeDefinition.getName() + " is already in the registry.");
         }
         registry.put(key, typeDefinition);
+        logger.debug("Registered type {}", key);
     }
 
     public TypeDefinition get(String name, String namespace) {
@@ -49,6 +55,7 @@ public class TypeRegistry {
     }
 
     public void clear() {
+        logger.debug("Clearing type registry with {} entries", registry.size());
         registry.clear();
     }
 

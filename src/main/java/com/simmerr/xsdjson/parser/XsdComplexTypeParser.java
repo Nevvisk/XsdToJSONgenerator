@@ -28,12 +28,14 @@ public class XsdComplexTypeParser {
         complexTypeDefinition.setNamespace(typeNamespace);
         complexTypeDefinition.setMixed(type.getContentType() == XSComplexTypeDefinition.CONTENTTYPE_MIXED);
         complexTypeDefinition.setAbstract(type.getAbstract());
+        logger.debug("Parsing complex type {} (namespace={})", typeName, typeNamespace);
 
         XSParticle particle = type.getParticle();
         if (particle == null) {
             complexTypeDefinition.setContentModel(ContentModel.EMPTY);
             complexTypeDefinition.setChildElements(new ArrayList<>());
             registry.register(complexTypeDefinition);
+            logger.debug("Complex type {} has empty content model", typeName);
             return complexTypeDefinition;
         }
 
@@ -75,6 +77,7 @@ public class XsdComplexTypeParser {
     private ParsedGroup parseModelGroup(XSModelGroup group, TypeRegistry typeRegistry) {
         ParsedGroup parsedGroup = new ParsedGroup();
         if (group.getCompositor() == XSModelGroup.COMPOSITOR_SEQUENCE) {
+            logger.debug("Parsing model group compositor: SEQUENCE");
             parsedGroup.setContentModel(ContentModel.SEQUENCE);
             List<XSParticle> particleList = getParticleListFromGroup(group);
             for (XSParticle particle : particleList) {
@@ -82,6 +85,7 @@ public class XsdComplexTypeParser {
                 parsedGroup.getElementList().addAll(childGroup.getElementList());
             }
         } else if (group.getCompositor() == XSModelGroup.COMPOSITOR_CHOICE) {
+            logger.debug("Parsing model group compositor: CHOICE");
             parsedGroup.setContentModel(ContentModel.CHOICE);
             List<XSParticle> particleList = getParticleListFromGroup(group);
             for (XSParticle particle : particleList) {
@@ -89,6 +93,7 @@ public class XsdComplexTypeParser {
                 parsedGroup.getElementList().addAll(childGroup.getElementList());
             }
         } else if (group.getCompositor() == XSModelGroup.COMPOSITOR_ALL) {
+            logger.debug("Parsing model group compositor: ALL");
             parsedGroup.setContentModel(ContentModel.ALL);
             List<XSParticle> particleList = getParticleListFromGroup(group);
             for (XSParticle particle : particleList) {
@@ -96,7 +101,8 @@ public class XsdComplexTypeParser {
                 parsedGroup.getElementList().addAll(childGroup.getElementList());
             }
         } else {
-            throw new XsdComplexTypeParsingException("ALL not supported yet.");
+            logger.error("Unsupported model group compositor value: {}", group.getCompositor());
+            throw new XsdComplexTypeParsingException("Unsupported model group compositor: " + group.getCompositor());
         }
         return parsedGroup;
     }

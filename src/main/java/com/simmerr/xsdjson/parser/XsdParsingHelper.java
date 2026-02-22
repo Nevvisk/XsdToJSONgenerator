@@ -40,6 +40,7 @@ public class XsdParsingHelper {
                 XSFacet singleFacet = (XSFacet) facet;
                 FacetType facetType = mapFacetToType(singleFacet.getFacetKind());
                 if (facetType != null) {
+                    logger.debug("Mapped facet {} -> {}", singleFacet.getFacetKind(), facetType);
                     map.computeIfAbsent(facetType, k -> new ArrayList<>()).add(singleFacet.getLexicalFacetValue());
                 }
             } else {
@@ -50,6 +51,7 @@ public class XsdParsingHelper {
                 }
 
                 StringList values = multiFacet.getLexicalFacetValues();
+                logger.debug("Mapped multi-value facet {} -> {} ({} value(s))", multiFacet.getFacetKind(), facetType, values.getLength());
                 for (int j = 0; j < values.getLength(); j++) {
                     map.computeIfAbsent(facetType, k -> new ArrayList<>())
                             .add(values.item(j));
@@ -98,6 +100,7 @@ public class XsdParsingHelper {
                 return FacetType.WHITE_SPACE;
             }
             default -> {
+                logger.debug("Unknown/unsupported facet kind: {}", facetKind);
                 return null;
             }
         }

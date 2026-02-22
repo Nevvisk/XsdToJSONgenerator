@@ -31,11 +31,13 @@ public class XsdSimpleTypeParser {
         definition.setNamespace(typeNamespace);
         String baseTypeName = type.getBaseType() != null ? type.getBaseType().getName() : null;
         definition.setBaseType(baseTypeName);
+        logger.debug("Parsing simple type {} (namespace={}, baseType={})", typeName, typeNamespace, baseTypeName);
 
         Map<FacetType, List<String>> facetMap = new HashMap<>();
         mergeFacetMap(facetMap, helper.buildFacetMap(type.getFacets()));
         mergeFacetMap(facetMap, helper.buildFacetMap(type.getMultiValueFacets()));
         definition.setFacets(facetMap);
+        logger.debug("Parsed {} facet type(s) for simple type {}", facetMap.size(), typeName);
         registry.register(definition);
     }
 
