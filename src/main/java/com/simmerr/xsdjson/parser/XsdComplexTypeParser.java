@@ -1,18 +1,31 @@
 package com.simmerr.xsdjson.parser;
 
 import com.simmerr.xsdjson.model.*;
+import com.simmerr.xsdjson.parser.strategy.AllModelGroupStrategy;
+import com.simmerr.xsdjson.parser.strategy.ChoiceModelGroupStrategy;
+import com.simmerr.xsdjson.parser.strategy.ModelGroupStrategy;
+import com.simmerr.xsdjson.parser.strategy.SequenceModelGroupStrategy;
 import com.simmerr.xsdjson.parser.exceptions.XsdComplexTypeParsingException;
 import org.apache.xerces.xs.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 public class XsdComplexTypeParser {
 
     protected XsdParsingHelper helper = new XsdParsingHelper();
     private static final Logger logger = LoggerFactory.getLogger(XsdComplexTypeParser.class);
+    private final Map<Short, ModelGroupStrategy> modelGroupStrategies;
+
+    public XsdComplexTypeParser() {
+        this.modelGroupStrategies = Map.of(
+                XSModelGroup.COMPOSITOR_SEQUENCE, new SequenceModelGroupStrategy(),
+                XSModelGroup.COMPOSITOR_CHOICE, new ChoiceModelGroupStrategy(),
+                XSModelGroup.COMPOSITOR_ALL, new AllModelGroupStrategy()
+        );
+    }
 
     public ComplexTypeDefinition parseComplexType(XSComplexTypeDefinition type, TypeRegistry registry) {
         ComplexTypeDefinition complexTypeDefinition = new ComplexTypeDefinition();
@@ -75,46 +88,12 @@ public class XsdComplexTypeParser {
     }
 
     private ParsedGroup parseModelGroup(XSModelGroup group, TypeRegistry typeRegistry) {
-        ParsedGroup parsedGroup = new ParsedGroup();
-        if (group.getCompositor() == XSModelGroup.COMPOSITOR_SEQUENCE) {
-            logger.debug("Parsing model group compositor: SEQUENCE");
-            parsedGroup.setContentModel(ContentModel.SEQUENCE);
-            List<XSParticle> particleList = getParticleListFromGroup(group);
-            for (XSParticle particle : particleList) {
-                ParsedGroup childGroup = parseParticle(particle, typeRegistry);
-                parsedGroup.getElementList().addAll(childGroup.getElementList());
-            }
-        } else if (group.getCompositor() == XSModelGroup.COMPOSITOR_CHOICE) {
-            logger.debug("Parsing model group compositor: CHOICE");
-            parsedGroup.setContentModel(ContentModel.CHOICE);
-            List<XSParticle> particleList = getParticleListFromGroup(group);
-            for (XSParticle particle : particleList) {
-                ParsedGroup childGroup = parseParticle(particle, typeRegistry);
-                parsedGroup.getElementList().addAll(childGroup.getElementList());
-            }
-        } else if (group.getCompositor() == XSModelGroup.COMPOSITOR_ALL) {
-            logger.debug("Parsing model group compositor: ALL");
-            parsedGroup.setContentModel(ContentModel.ALL);
-            List<XSParticle> particleList = getParticleListFromGroup(group);
-            for (XSParticle particle : particleList) {
-                ParsedGroup childGroup = parseParticle(particle, typeRegistry);
-                parsedGroup.getElementList().addAll(childGroup.getElementList());
-            }
-        } else {
+        ModelGroupStrategy strategy = modelGroupStrategies.get(group.getCompositor());
+        if (strategy == null) {
             logger.error("Unsupported model group compositor value: {}", group.getCompositor());
             throw new XsdComplexTypeParsingException("Unsupported model group compositor: " + group.getCompositor());
         }
-        return parsedGroup;
-    }
-
-    private List<XSParticle> getParticleListFromGroup(XSModelGroup group) {
-        List<XSParticle> particleList = new ArrayList<>();
-        if (group != null) {
-            for (int i = 0; i < group.getParticles().getLength(); i++) {
-                XSParticle particle = (XSParticle) group.getParticles().get(i);
-                particleList.add(particle);
-            }
-        }
-        return particleList;
+        logger.debug("Parsing model group compositor: {}", strategy.getClass().getSimpleName());
+        return strategy.parse(group, typeRegistry, this::parseParticle);
     }
 }

@@ -38,14 +38,14 @@ public class XsdParsingHelper {
             XSObject facet = (XSObject) facets.get(i);
             if (facet instanceof XSFacet) {
                 XSFacet singleFacet = (XSFacet) facet;
-                FacetType facetType = mapFacetToType(singleFacet.getFacetKind());
+                FacetType facetType = mapFacetKind(singleFacet.getFacetKind());
                 if (facetType != null) {
                     logger.debug("Mapped facet {} -> {}", singleFacet.getFacetKind(), facetType);
                     map.computeIfAbsent(facetType, k -> new ArrayList<>()).add(singleFacet.getLexicalFacetValue());
                 }
             } else {
                 XSMultiValueFacet multiFacet = (XSMultiValueFacet) facet;
-                FacetType facetType = mapFacetToType(multiFacet.getFacetKind());
+                FacetType facetType = mapFacetKind(multiFacet.getFacetKind());
                 if (facetType == null) {
                     continue;
                 }
@@ -61,7 +61,7 @@ public class XsdParsingHelper {
         return map;
     }
 
-    private FacetType mapFacetToType(short facetKind) {
+    public FacetType mapFacetKind(short facetKind) {
         switch (facetKind) {
             case XSSimpleTypeDefinition.FACET_LENGTH -> {
                 return FacetType.LENGTH;
